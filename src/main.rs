@@ -275,6 +275,11 @@ fn trace_ray(ray: &Ray, scene: &Scene, depth: u32) -> Color {
                 |isect| shade(&isect, &scene, &ray, depth))
 }
 
+fn test_ray(ray: &Ray, scene: &Scene) -> Option<f64> {
+    closest_intersection(&ray, &scene)
+        .map(|v| v.dist)
+}
+
 fn closest_intersection<'a>(ray: &Ray, scene: &'a Scene) -> Option<Intersect<'a>> {
     // TODO
     None
@@ -296,13 +301,50 @@ fn shade(isect: &Intersect, scene: &Scene, ray: &Ray, depth: u32) -> Color {
 }
 
 fn reflection_color(thing: &Thing, pos: &Vector, dir: &Vector, scene: &Scene, depth: u32) -> Color {
-    // TODO
-    Color::white()
+    let ray = Ray {
+        start: &pos,
+        dir: &dir,
+    };
+
+    trace_ray(&ray, &scene, depth + 1).scale(
+        thing.surface().reflect(&pos)
+    )
 }
 
 fn natural_color(thing: &Thing, pos: &Vector, normal: &Vector, dir: &Vector, scene: &Scene) -> Color {
-    // TODO
-    Color::black()
+    let color_light = |light: &Light| {
+        let light_dist = light.pos.minus(&pos);
+        let light_norm = light_dist.norm();
+        let isect = test_ray(
+            &Ray { start: &pos, dir: &light_norm },
+            &scene
+        );
+        let in_shadow = isect.map_or(false, |v| v <= light_dist.mag());
+
+        if in_shadow {
+            None
+        } else {
+            let light_color = light_norm.dot_pos_neg(
+                &normal,
+                |illum| light.color.scale(illum),
+                |_| Color::black(),
+            );
+            let spec_color = light_norm.dot_pos_neg(
+                &dir.norm(),
+                |spec| light.color.scale(spec.powi(thing.surface().roughness())),
+                |_| Color::black(),
+            );
+            Some(
+                light_color.times(&thing.surface().diffuse(pos))
+                    .plus(&spec_color.times(&thing.surface().specular(pos)))
+            )
+        }
+    };
+
+    scene.lights
+        .iter()
+        .filter_map(color_light)
+        .fold(Color::black(), |acc, c| c.plus(&acc))
 }
 
 fn make_scene() -> Scene {
