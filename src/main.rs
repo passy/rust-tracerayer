@@ -4,6 +4,8 @@ use image::ImageBuffer;
 use std::path::Path;
 use std::f64::INFINITY;
 
+const MAX_DEPTH: u32 = 5;
+
 #[derive(Debug, PartialEq)]
 struct Vector {
     x: f64,
@@ -83,6 +85,22 @@ impl Color {
             r: k * self.r,
             g: k * self.g,
             b: k * self.b,
+        }
+    }
+
+    fn plus(self: &Color, v: &Color) -> Color {
+        Color {
+            r: self.r + v.r,
+            g: self.g + v.g,
+            b: self.b + v.b,
+        }
+    }
+
+    fn times(self: &Color, v: &Color) -> Color {
+        Color {
+            r: self.r * v.r,
+            g: self.g * v.g,
+            b: self.b * v.b,
         }
     }
 
@@ -263,6 +281,26 @@ fn closest_intersection<'a>(ray: &Ray, scene: &'a Scene) -> Option<Intersect<'a>
 }
 
 fn shade(isect: &Intersect, scene: &Scene, ray: &Ray, depth: u32) -> Color {
+    let pos = ray.dir.times(isect.dist).plus(&ray.start);
+    let normal = isect.thing.normal(&pos);
+    let reflect_dir = ray.dir.minus(&normal.times(2.0 * normal.dot(ray.dir)));
+    let natural_color = &Color::background().plus(
+        &natural_color(isect.thing, &pos, &normal, &reflect_dir, &scene)
+    );
+    let reflection_color = if depth >= MAX_DEPTH {
+        Color::grey()
+    } else {
+        reflection_color(isect.thing, &pos, &reflect_dir, &scene, depth)
+    };
+    natural_color.plus(&reflection_color)
+}
+
+fn reflection_color(thing: &Thing, pos: &Vector, dir: &Vector, scene: &Scene, depth: u32) -> Color {
+    // TODO
+    Color::white()
+}
+
+fn natural_color(thing: &Thing, pos: &Vector, normal: &Vector, dir: &Vector, scene: &Scene) -> Color {
     // TODO
     Color::black()
 }
