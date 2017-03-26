@@ -249,8 +249,29 @@ impl Thing for Sphere {
 fn make_scene() -> Scene {
     Scene {
         things: vec![
+            Box::new(Sphere {
+                center: Vector { x: 0.0, y: 1.0, z: -0.25 },
+                radius: 1.0,
+                surface: Box::new(Shiny),
+            }),
         ],
         lights: vec![
+            Light {
+                pos: Vector { x: -2.0, y: 2.5, z: 0.0 },
+                color: Color { r: 0.49, g: 0.07, b: 0.07 },
+            },
+            Light {
+                pos: Vector { x: 1.5, y: 2.5, z: 1.5 },
+                color: Color { r: 0.07, g: 0.07, b: 0.49 },
+            },
+            Light {
+                pos: Vector { x: 1.5, y: 2.5, z: -1.5 },
+                color: Color { r: 0.07, g: 0.49, b: 0.071 },
+            },
+            Light {
+                pos: Vector { x: 0.0, y: 3.5, z: 0.0 },
+                color: Color { r: 0.21, g: 0.21, b: 0.35 },
+            },
         ],
         camera: Camera::new(
             Vector {
