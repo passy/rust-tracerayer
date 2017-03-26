@@ -1,11 +1,8 @@
 extern crate image;
 
 use image::ImageBuffer;
+use std::path::Path;
 use std::f64::INFINITY;
-
-fn main() {
-    println!("Hello, world!");
-}
 
 #[derive(Debug, PartialEq)]
 struct Vector {
@@ -192,6 +189,22 @@ struct Camera {
     up: Vector,
 }
 
+impl Camera {
+    fn new(pos: Vector, look_at: Vector) -> Camera {
+        let fwd = look_at.minus(&pos).norm();
+        let down = Vector { x: 0.0, y: -1.0, z: 0.0 };
+        let right = fwd.cross(&down).norm().times(1.5);
+        let up = fwd.cross(&right).norm().times(1.5);
+
+        Camera {
+            pos: pos,
+            fwd: fwd,
+            right: right,
+            up: up,
+        }
+    }
+}
+
 struct Scene {
     things: Vec<Box<Thing>>,
     lights: Vec<Light>,
@@ -231,4 +244,36 @@ impl Thing for Sphere {
             }
         }, |_| None)
     }
+}
+
+fn make_scene() -> Scene {
+    Scene {
+        things: vec![
+        ],
+        lights: vec![
+        ],
+        camera: Camera::new(
+            Vector {
+                x: 3.0,
+                y: 2.0,
+                z: 4.0,
+            }, Vector {
+                x: -1.0,
+                y: 0.5,
+                z: 0.0,
+            }
+        ),
+    }
+}
+
+fn render_to_file(scene: &Scene, width: u32, height: u32, path: &Path) {
+
+}
+
+fn main() {
+    println!("Let's do some rendering, shall we?");
+
+    render_to_file(&make_scene(), 512, 512, &Path::new("out.png"));
+
+    println!("Well, that's just fine and dandy. Open out.png to marvel at the results.");
 }
