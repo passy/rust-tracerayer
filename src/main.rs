@@ -281,8 +281,23 @@ fn test_ray(ray: &Ray, scene: &Scene) -> Option<f64> {
 }
 
 fn closest_intersection<'a>(ray: &Ray, scene: &'a Scene) -> Option<Intersect<'a>> {
-    // TODO
-    None
+    // FIXME: Let's do this without mutation.
+    let mut closest = INFINITY;
+    let mut closest_isect = None;
+
+    for thing in &scene.things {
+        match thing.intersect(&ray) {
+            Some(isect) => {
+                if isect.dist < closest {
+                    closest = isect.dist;
+                    closest_isect = Some(isect);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    closest_isect
 }
 
 fn shade(isect: &Intersect, scene: &Scene, ray: &Ray, depth: u32) -> Color {
