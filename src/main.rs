@@ -319,7 +319,7 @@ fn render_to_file(scene: &Scene, width: u32, height: u32, path: &Path) {
                 / (2.0 * (height as f64))
         };
 
-        &scene.camera.fwd.plus(
+        scene.camera.fwd.plus(
             &scene.camera.right.times(recenter_x(x as f64)).plus(
                 &scene.camera.up.times(recenter_y(y as f64))
             )
@@ -333,7 +333,7 @@ fn render_to_file(scene: &Scene, width: u32, height: u32, path: &Path) {
         };
 
         let color = trace_ray(&ray, &scene, 0).to_triple();
-        image::Rgb(color);
+        image::Rgb(color)
     });
 
     let _ = img.save(path);
