@@ -397,7 +397,7 @@ fn make_scene() -> Scene {
                 surface: Box::new(Checkerboard),
             }),
             Box::new(Sphere {
-                center: Vector { x: 0.0, y: 1.0, z: -0.25 },
+                center: Vector { x: 0.0, y: 1.0, z: 0.0 },
                 radius: 0.5,
                 surface: Box::new(Shiny),
             }),
