@@ -365,7 +365,12 @@ fn make_scene() -> Scene {
     Scene {
         things: vec![
             Box::new(Sphere {
-                center: Vector { x: 0.0, y: 1.0, z: -0.25 },
+                center: Vector { x: 0.0, y: 1.0, z: 0.0 },
+                radius: 0.5,
+                surface: Box::new(Shiny),
+            }),
+            Box::new(Sphere {
+                center: Vector { x: -1.0, y: 0.5, z: 1.5 },
                 radius: 1.0,
                 surface: Box::new(Shiny),
             }),
