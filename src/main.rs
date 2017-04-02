@@ -391,8 +391,13 @@ fn natural_color(thing: &Thing, pos: &Vector, normal: &Vector, dir: &Vector, sce
 fn make_scene() -> Scene {
     Scene {
         things: vec![
+            Box::new(Plane {
+                norm: Vector { x: 0.0, y: 1.0, z: 0.0 },
+                offset: 0.0,
+                surface: Box::new(Checkerboard),
+            }),
             Box::new(Sphere {
-                center: Vector { x: 0.0, y: 1.0, z: 0.0 },
+                center: Vector { x: 0.0, y: 1.0, z: -0.25 },
                 radius: 0.5,
                 surface: Box::new(Shiny),
             }),
