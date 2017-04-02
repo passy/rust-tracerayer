@@ -6,7 +6,7 @@ use std::f64::INFINITY;
 
 const MAX_DEPTH: u32 = 5;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 struct Vector {
     x: f64,
     y: f64,
@@ -266,6 +266,33 @@ impl Thing for Sphere {
                 )
             }
         }, |_| None)
+    }
+}
+
+struct Plane {
+    norm: Vector,
+    offset: f64,
+    surface: Box<Surface>,
+}
+
+impl Thing for Plane {
+    fn surface(&self) -> &Surface {
+        &*self.surface
+    }
+
+    fn normal(&self, _: &Vector) -> Vector {
+        self.norm.clone()
+    }
+
+    fn intersect<'a>(&'a self, ray: &Ray) -> Option<Intersect<'a>> {
+        self.norm.dot_pos_neg(&ray.dir, |_| None, |denom| {
+            let dist = self.norm.dot(&ray.start) + self.offset - denom;
+
+            Some(Intersect {
+                thing: self,
+                dist: dist,
+            })
+        })
     }
 }
 
