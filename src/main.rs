@@ -286,7 +286,7 @@ impl Thing for Plane {
 
     fn intersect<'a>(&'a self, ray: &Ray) -> Option<Intersect<'a>> {
         self.norm.dot_pos_neg(&ray.dir, |_| None, |denom| {
-            let dist = self.norm.dot(&ray.start) + self.offset - denom;
+            let dist = (self.norm.dot(&ray.start) + self.offset) / -denom;
 
             Some(Intersect {
                 thing: self,
